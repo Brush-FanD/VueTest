@@ -1,0 +1,190 @@
+/* ============================================================
+   全局设计令牌与通用样式
+   页面里只用这里的变量，换主题只需要改这一份
+   ============================================================ */
+:root {
+  /* 品牌色（懂车帝红）+ 同色系深浅 */
+  --c-brand: #E01E26;
+  --c-brand-2: #FF5A5F;
+  --c-brand-soft: rgba(224, 30, 38, 0.08);
+  --c-brand-line: rgba(224, 30, 38, 0.22);
+
+  /* 文字三级 */
+  --c-text: #16181D;
+  --c-text-2: #5B6472;
+  --c-text-3: #98A1AE;
+
+  /* 背景与分割线 */
+  --c-bg: #F4F5F7;
+  --c-card: #FFFFFF;
+  --c-line: #EEF0F4;
+
+  /* 功能色 */
+  --c-ok: #12B76A;
+  --c-warn: #F79009;
+
+  /* 圆角 */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
+
+  /* 阴影 */
+  --sh-1: 0 1px 2px rgba(16, 24, 40, 0.04), 0 2px 8px rgba(16, 24, 40, 0.05);
+  --sh-2: 0 8px 28px rgba(16, 24, 40, 0.12);
+
+  /* 布局 */
+  --nav-h: 58px;
+  --gutter: 12px;
+
+  /* Element Plus 主题对齐品牌色 */
+  --el-color-primary: #E01E26;
+  --el-color-primary-light-3: #EA5A61;
+  --el-color-primary-light-5: #F08D92;
+  --el-color-primary-light-7: #F6BFC2;
+  --el-color-primary-light-8: #F9D5D7;
+  --el-color-primary-light-9: #FCEDEE;
+  --el-color-primary-dark-2: #B81820;
+  --el-border-radius-base: 10px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body, #app { height: 100%; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', Roboto, sans-serif;
+  background: #E9EBEF;
+  color: var(--c-text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 桌面端把内容居中成手机宽度，移动端铺满 */
+#app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--c-bg);
+  box-shadow: 0 0 40px rgba(16, 24, 40, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 滚动条美化（桌面浏览器） */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-thumb { background: rgba(16, 24, 40, 0.16); border-radius: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ============ 通用组件 ============ */
+.card {
+  background: var(--c-card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-1);
+}
+
+/* 页面通用容器 */
+.page { padding: var(--gutter); padding-bottom: 20px; }
+
+/* 分区标题 */
+.section-title {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 15px; font-weight: 700; color: var(--c-text);
+  margin: 16px 2px 10px;
+}
+.section-title .bar {
+  width: 3px; height: 14px; border-radius: 2px;
+  background: linear-gradient(180deg, var(--c-brand), var(--c-brand-2));
+}
+.section-title .more {
+  margin-left: auto; font-size: 12px; font-weight: 400; color: var(--c-text-3);
+}
+
+/* 标签 / 芯片 */
+.chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 12px; color: var(--c-text-2); background: #F1F3F7;
+  white-space: nowrap;
+}
+.chip.brand { color: var(--c-brand); background: var(--c-brand-soft); }
+
+/* 按钮 */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: none; border-radius: var(--r-md); padding: 10px 16px;
+  font-size: 14px; font-family: inherit; cursor: pointer;
+  background: #F1F3F7; color: var(--c-text);
+  transition: transform .12s ease, opacity .12s ease, background .12s ease;
+}
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.primary {
+  background: linear-gradient(135deg, var(--c-brand), var(--c-brand-2));
+  color: #fff; box-shadow: 0 6px 16px rgba(224, 30, 38, .28);
+}
+.btn.ghost { background: transparent; color: var(--c-text-2); }
+.btn.sm { padding: 6px 12px; font-size: 12px; border-radius: 999px; }
+
+/* 骨架屏 */
+.skeleton {
+  background: linear-gradient(90deg, #EEF0F4 25%, #F7F8FA 37%, #EEF0F4 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: var(--r-sm);
+}
+@keyframes shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+/* 空状态 */
+.empty {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 56px 24px; color: var(--c-text-3); text-align: center;
+}
+.empty .emoji { font-size: 44px; line-height: 1; opacity: .9; }
+.empty .tip { font-size: 13px; }
+
+/* 顶部渐变头图（多个页面复用） */
+.hero {
+  background: linear-gradient(135deg, #1F2329 0%, #2C3138 55%, #3A2226 100%);
+  color: #fff;
+  padding: 14px 14px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: ''; position: absolute; right: -40px; top: -50px;
+  width: 160px; height: 160px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(224,30,38,.55), transparent 70%);
+}
+
+/* 页面切换动画 */
+.fade-slide-enter-active, .fade-slide-leave-active {
+  transition: opacity .22s ease, transform .22s ease;
+}
+.fade-slide-enter-from { opacity: 0; transform: translateY(8px); }
+.fade-slide-leave-to { opacity: 0; transform: translateY(-6px); }
+
+/* 列表逐项浮现 */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.rise { animation: rise .32s ease both; }
+
+/* 文字截断 */
+.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clamp-2 {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Element Plus 局部微调 */
+.el-dialog { border-radius: var(--r-lg) !important; overflow: hidden; }
+.el-message { border-radius: 999px !important; }

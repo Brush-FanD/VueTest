@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: springAI
+  profiles:
+    active: local
+    # application.yml
+  servlet:
+    multipart:
+      # 视频上传：SpringBoot 默认单文件上限只有 1MB，必须显式放宽
+      max-file-size: 200MB
+      max-request-size: 220MB
+
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+
+# 业务自定义配置
+app:
+  # 上传的视频 / 封面落盘目录，启动时自动创建；访问路径为 {context-path}/files/**
+  upload-dir: ./uploads
+  # 允许跨域的前端地址，多个用英文逗号分隔；留空则关闭 CORS（默认部署走同源或 Nginx 代理）
+  cors:
+    allowed-origins: http://localhost:5000,http://127.0.0.1:5000
+  # MCP 工具服务（ChatMcpModel 模块，默认 8082）：主服务以 MCP 客户端连接它，
+  # 把远端 @Tool 注册给大模型。服务没启动时只记 WARN，不影响主服务启动。
+  mcp:
+    server-url: ${MCP_SERVER_URL:http://127.0.0.1:8082}
+    sse-endpoint: /sse
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+    filter: true
+  show-actuator: false

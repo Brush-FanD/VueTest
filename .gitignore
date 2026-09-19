@@ -1,0 +1,41 @@
+# 构建产物
+target/
+dist/
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+
+# 运行时数据（上传的视频与封面）
+uploads/
+
+# 本地环境变量
+.env
+.env.local
+.env.*.local
+
+# 历史备份压缩包：内含过期的明文密钥，禁止入库
+*.zip
+
+# 简历相关（含个人联系方式，不入库）
+.resume-build/
+李环宇-简历-*.pdf
+李环宇-简历-*.docx
+
+# 杂项
+*.log
+.DS_Store
+Thumbs.db
+**/springdoc-openapi.json
+李环宇-面试问题预测与应答手册.pdf
+
+# 其他本地环境变量与证书
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore

@@ -1,0 +1,10 @@
+spring:
+  ai:
+    openai:
+      # 密钥只从环境变量读取，禁止再写进代码仓库（启动前先设置 DEEPSEEK_API_KEY）
+      api-key: ${DEEPSEEK_API_KEY}
+      base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
+      chat:
+        options:
+          # deepseek-chat（通用）/ deepseek-reasoner（推理）
+          model: ${DEEPSEEK_CHAT_MODEL:deepseek-chat}
