@@ -72,11 +72,11 @@
         <span class="more">{{ comments.length }} 条</span>
       </div>
 
-      <div class="editor">
+      <div v-if="isLoggedIn" class="editor">
         <input
           v-model="draft"
           class="editor-input"
-          :placeholder="`以「${nickname}」的身份发表看法…`"
+          :placeholder="`以「${user.displayName}」的身份发表看法…`"
           :disabled="submitting"
           @keyup.enter="submitComment"
         />
@@ -84,6 +84,7 @@
           {{ submitting ? '发送中' : '发送' }}
         </button>
       </div>
+      <button v-else class="editor-login" type="button" @click="requireLogin()">登录后发表评论</button>
 
       <div v-if="comments.length" class="list">
         <CommentItem
@@ -112,7 +113,7 @@ import { getVideo } from '../api/video'
 import { mediaUrl } from '../utils/media'
 import { timeAgo } from '../utils/format'
 import { favoriteStore, likeStore, progressStore } from '../utils/storage'
-import { localNickname } from '../utils/nickname'
+import { useAuth } from '../composables/useAuth'
 
 const route = useRoute()
 const router = useRouter()
@@ -131,7 +132,15 @@ const failed = ref(false)
 const comments = ref([])
 const draft = ref('')
 const submitting = ref(false)
-const nickname = localNickname()
+const { user, isLoggedIn } = useAuth()
+
+/** 未登录时提示并跳去登录，返回 false 让调用方短路 */
+const requireLogin = () => {
+  if (isLoggedIn.value) return true
+  ElMessage.warning('请先登录')
+  router.push({ name: 'Account', query: { redirect: route.fullPath } })
+  return false
+}
 
 const favorited = ref(favoriteStore.has(videoId))
 const liked = ref(likeStore.has(videoId))
@@ -225,11 +234,12 @@ const onTimeUpdate = () => {
 }
 
 const submitComment = async () => {
+  if (!requireLogin()) return
   const content = draft.value.trim()
   if (!content || submitting.value) return
   submitting.value = true
   try {
-    const created = await createComment({ videoId, comment: content, commenter: nickname })
+    const created = await createComment({ videoId, comment: content })
     comments.value.unshift(initComments([created])[0])
     draft.value = ''
   } catch {
@@ -240,14 +250,14 @@ const submitComment = async () => {
 }
 
 const handleReply = async (comment) => {
+  if (!requireLogin()) return
   const content = comment.replyContent?.trim()
   if (!content) return
   try {
     const created = await createComment({
       videoId,
       parentCommentId: comment.id,
-      comment: content,
-      commenter: nickname
+      comment: content
     })
     comment.replies.unshift(initComments([created])[0])
     comment.showReply = false
@@ -363,6 +373,12 @@ const handleDelete = (comment) => {
   box-shadow: 0 6px 16px rgba(224, 30, 38, .25);
 }
 .editor-send:disabled { opacity: .45; box-shadow: none; cursor: not-allowed; }
+.editor-login {
+  width: 100%; margin-bottom: 16px;
+  border: 1px dashed var(--c-line); border-radius: 12px;
+  background: #fff; padding: 12px 0; cursor: pointer;
+  font-size: 14px; font-family: inherit; color: var(--c-brand);
+}
 
 .list { display: flex; flex-direction: column; gap: 16px; }
 </style>

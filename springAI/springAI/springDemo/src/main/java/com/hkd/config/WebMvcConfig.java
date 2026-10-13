@@ -45,6 +45,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     /**
      * 前端与后端不同源时才需要跨域；开发环境走 Vite 代理其实用不到，
      * 留在这里是为了直接访问后端 8123 端口调试时也能正常请求。
+     *
+     * <p>会话身份放在 Cookie 里，跨域请求必须 allowCredentials(true) 才能带上它，
+     * 因此这里不能再用通配符 Origin。</p>
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -55,6 +58,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedOrigins(allowedOrigins.toArray(String[]::new))
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
+                .allowCredentials(true)
                 .maxAge(3600);
     }
 }

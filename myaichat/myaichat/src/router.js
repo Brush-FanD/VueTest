@@ -43,6 +43,18 @@ const routes = [
     meta: { title: '懂车AI' }
   },
   {
+    path: '/knowledge',
+    name: 'Knowledge',
+    component: () => import('./views/Knowledge.vue'),
+    meta: { title: '知识库' }
+  },
+  {
+    path: '/me',
+    name: 'Account',
+    component: () => import('./views/Account.vue'),
+    meta: { title: '我的' }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('./views/NotFound.vue'),

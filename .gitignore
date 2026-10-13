@@ -39,3 +39,15 @@ Thumbs.db
 *.pfx
 *.jks
 *.keystore
+
+# H2 数据库文件（本地账号数据，不入库）
+data/
+*.mv.db
+*.trace.db
+# 本地临时目录与面试材料（不入库）
+.build-check/
+.interview-rebuild/
+.resume-work/
+面试作答重制版-*.pdf
+# 误在 myaichat/ 下执行 npm 产生的副本（真正的 lock 在 myaichat/myaichat/）
+myaichat/package-lock.json

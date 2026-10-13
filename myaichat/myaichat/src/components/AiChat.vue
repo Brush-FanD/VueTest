@@ -12,6 +12,7 @@
         <button class="ghost-btn" type="button" @click="toggleMode" :title="mode === 'stream' ? '已开启流式输出' : '已切换为整段返回'">
           {{ mode === 'stream' ? '流式' : '整段' }}
         </button>
+        <button class="ghost-btn" type="button" @click="router.push('/knowledge')">知识库</button>
         <button class="ghost-btn" type="button" @click="reset">新会话</button>
       </div>
     </header>
@@ -82,11 +83,12 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useChat } from '../composables/useChat'
 
 const route = useRoute()
+const router = useRouter()
 const messageContainer = ref(null)
 const { messages, input, loading, mode, send, sendText, stop, retry, reset } = useChat(messageContainer)
 

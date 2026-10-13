@@ -4,6 +4,9 @@ import lombok.Data;
 
 /**
  * 发表评论 / 回复的请求体。
+ *
+ * <p>注意：评论者昵称不再由前端传，统一取登录用户的 displayName，
+ * 避免前端伪造昵称冒充别人。</p>
  */
 @Data
 public class CommentRequest {
@@ -14,7 +17,4 @@ public class CommentRequest {
     private Long parentCommentId;
 
     private String comment;
-
-    /** 昵称，未登录场景由前端生成并保存在本地，留空时后端填"匿名用户" */
-    private String commenter;
 }

@@ -1,6 +1,6 @@
 package com.hkd.model;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class VideoInfo {
 
     private Long id;
@@ -25,4 +24,14 @@ public class VideoInfo {
     private String videoPath;
 
     private LocalDateTime createTime;
+
+    /**
+     * 上传者用户 ID（登录用户）。用 @JsonIgnore 保证它不返回给前端，
+     * 否则等于把别人的身份泄露出去。
+     */
+    @JsonIgnore
+    private Long ownerId;
+
+    /** 是否由当前登录用户上传；读取时按请求计算，不入库 */
+    private boolean mine;
 }

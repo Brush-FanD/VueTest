@@ -3,6 +3,8 @@ package com.hkd.handler;
 import com.hkd.dto.Result;
 import com.hkd.exception.AiServiceException;
 import com.hkd.exception.BusinessException;
+import com.hkd.exception.ForbiddenException;
+import com.hkd.exception.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Result<Void> handleBusiness(BusinessException e) {
         log.warn("业务校验失败：{}", e.getMessage());
+        return Result.error(e.getMessage());
+    }
+
+    /** 未登录：需要登录的接口被匿名访问 */
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Result<Void> handleUnauthorized(UnauthorizedException e) {
+        log.warn("未登录访问受限接口：{}", e.getMessage());
+        return Result.error(e.getMessage());
+    }
+
+    /** 越权：已登录，但不是这条资源的拥有者 */
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Result<Void> handleForbidden(ForbiddenException e) {
+        log.warn("越权操作被拒绝：{}", e.getMessage());
         return Result.error(e.getMessage());
     }
 

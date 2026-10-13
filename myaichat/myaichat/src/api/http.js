@@ -1,17 +1,21 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import router from '../router'
 
 /**
  * 全局唯一的 axios 实例。
  *
  * - baseURL 默认 /api：开发环境交给 Vite 代理转发到后端 8123，生产环境由 Nginx 同源代理
- * - AI 接口返回 { code, msg, data } 包装结构，这里自动解包成 data
+ * - AI / 鉴权接口返回 { code, msg, data } 包装结构，这里自动解包成 data
  * - 视频 / 评论接口直接返回数组或对象，原样透传
  * - 失败时统一弹提示，单个请求可用 { silent: true } 关掉
+ * - withCredentials：会话身份放在 HttpOnly Cookie 里，必须带上凭据后端才认得“你是谁”
+ * - 401：未登录，统一跳到“我的”页登录，并带上回跳地址
  */
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 60000,
+  withCredentials: true,
   silent: false
 })
 
@@ -33,15 +37,25 @@ const resolveErrorMessage = (error) => {
   return '网络连接失败，请检查网络'
 }
 
+const redirectToLogin = () => {
+  const current = router.currentRoute.value
+  if (current.name === 'Account') return
+  router.push({ name: 'Account', query: { redirect: current.fullPath } })
+}
+
 http.interceptors.response.use(
   (response) => unwrap(response.data),
   (error) => {
+    const status = error.response?.status
     const message = resolveErrorMessage(error)
-    if (!error.config?.silent) {
+    if (status === 401) {
+      ElMessage.warning(message)
+      redirectToLogin()
+    } else if (!error.config?.silent) {
       ElMessage.error(message)
     }
     const wrapped = new Error(message)
-    wrapped.status = error.response?.status
+    wrapped.status = status
     wrapped.config = error.config
     return Promise.reject(wrapped)
   }

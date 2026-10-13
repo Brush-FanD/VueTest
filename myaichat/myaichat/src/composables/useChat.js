@@ -93,6 +93,8 @@ export function useChat(containerRef) {
     try {
       const response = await fetch(chatStreamUrl(text), {
         signal: controller.signal,
+        // 会话身份在 HttpOnly Cookie 里，流式请求也必须带上凭据
+        credentials: 'include',
         headers: { Accept: 'text/event-stream' }
       })
       if (!response.ok) {

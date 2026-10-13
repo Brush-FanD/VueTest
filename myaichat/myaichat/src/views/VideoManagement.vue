@@ -45,7 +45,7 @@
             <h3 class="title clamp-2">{{ item.videoName }}</h3>
             <span class="time">{{ timeAgo(item.createTime) }}</span>
           </div>
-          <div class="ops" @click.stop>
+          <div v-if="item.mine" class="ops" @click.stop>
             <button class="op" type="button" title="编辑" @click="openEdit(item)">编辑</button>
             <button class="op danger" type="button" title="删除" @click="handleDelete(item)">删除</button>
           </div>
@@ -119,10 +119,20 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { listVideos, removeVideo, updateVideo, uploadVideo } from '../api/video'
+import { useAuth } from '../composables/useAuth'
 import { mediaUrl } from '../utils/media'
 import { formatDuration, formatSize, timeAgo } from '../utils/format'
 
 const router = useRouter()
+const { isLoggedIn } = useAuth()
+
+/** 未登录时提示并跳去登录页，返回 false 让调用方短路 */
+const requireLogin = (redirect = '/videos') => {
+  if (isLoggedIn.value) return true
+  ElMessage.warning('请先登录')
+  router.push({ name: 'Account', query: { redirect } })
+  return false
+}
 
 const videos = ref([])
 const loading = ref(true)

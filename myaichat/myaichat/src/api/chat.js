@@ -1,43 +1,20 @@
 import http from './http'
 
-const CONVERSATION_KEY = 'aichat:conversationId'
-
-/** 流结束标记：后端在 Flux 末尾追加，前端据此关闭 EventSource */
+/** 流结束标记：后端在 Flux 末尾追加，前端据此结束读取 */
 export const STREAM_DONE = '[COMPLETE]'
 
 /**
- * 取当前会话 ID：存在 sessionStorage 里，同一次浏览器会话保持同一个值，
- * AI 才能记住上文（原来的实现每次请求都新建 ID，等于没有上下文）。
+ * 会话 ID 现在由服务端签发并存在 HttpOnly Cookie 里，前端读不到也改不了，
+ * 所以这里不再自己生成 / 传递 conversationId，只需通知后端清空当前会话记忆。
  */
-export const getConversationId = () => {
-  let id = sessionStorage.getItem(CONVERSATION_KEY)
-  if (!id) {
-    id = `web-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-    sessionStorage.setItem(CONVERSATION_KEY, id)
-  }
-  return id
-}
-
-/** 清空后端记忆，失败也不影响用户继续对话 */
-export const clearMemory = (conversationId) =>
-  http.delete('/web/aichat/memory', { params: { conversationId }, silent: true })
-
-/** 开启新会话：后端记忆清空 + 本地会话 ID 重置 */
-export const newConversation = async () => {
-  const previous = sessionStorage.getItem(CONVERSATION_KEY)
-  sessionStorage.removeItem(CONVERSATION_KEY)
-  if (previous) {
-    await clearMemory(previous)
-  }
-  return getConversationId()
-}
+export const newConversation = () =>
+  http.delete('/web/aichat/memory', { silent: true })
 
 /** 同步对话，返回 AI 回复文本 */
-export const chatSync = (message, conversationId = getConversationId()) =>
-  http.post('/web/aichat', { message, conversationId })
+export const chatSync = (message) => http.post('/web/aichat', { message })
 
-/** EventSource 只能发 GET，所以流式对话的参数走查询串 */
-export const chatStreamUrl = (message, conversationId = getConversationId()) => {
+/** 流式对话地址：会话身份走 Cookie，不再把会话 ID 拼进查询串 */
+export const chatStreamUrl = (message) => {
   const base = http.defaults.baseURL || ''
-  return `${base}/web/chatstream?message=${encodeURIComponent(message)}&conversationId=${encodeURIComponent(conversationId)}`
+  return `${base}/web/chatstream?message=${encodeURIComponent(message)}`
 }

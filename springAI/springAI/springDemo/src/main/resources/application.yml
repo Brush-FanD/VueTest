@@ -10,6 +10,17 @@ spring:
       max-file-size: 200MB
       max-request-size: 220MB
 
+  # 用户账号持久化：H2 文件库，数据文件写在 ./data/myaichat，重启不丢
+  datasource:
+    # 注意：AUTO_SERVER 与 DB_CLOSE_ON_EXIT 不能同时出现，H2 会直接报错
+    url: jdbc:h2:file:./data/myaichat;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  sql:
+    init:
+      # 每次启动执行 schema.sql；脚本里全是 CREATE TABLE IF NOT EXISTS，幂等
+      mode: always
 server:
   port: 8123
   servlet:
@@ -22,6 +33,35 @@ app:
   # 允许跨域的前端地址，多个用英文逗号分隔；留空则关闭 CORS（默认部署走同源或 Nginx 代理）
   cors:
     allowed-origins: http://localhost:5000,http://127.0.0.1:5000
+  # RAG 知识库：默认接本地 Ollama 的 bge-m3（先执行 ollama pull bge-m3）
+  rag:
+    enabled: true
+    # 最终喂给模型的资料条数
+    top-k: 5
+    # 先向量召回多少条候选，再重排精选
+    recall-k: 20
+    # 重排开关 + 向量分权重（其余权重给词面匹配）
+    rerank-enabled: true
+    rerank-vector-weight: 0.7
+    # 相似度下限，低于它的片段直接丢弃
+    similarity-threshold: 0.35
+    # 每块目标字数 / 相邻块重叠字数
+    chunk-size: 500
+    chunk-overlap: 80
+    # 拼进 prompt 的资料总字数上限
+    max-context-chars: 6000
+    # 单份资料字数上限
+    max-document-chars: 100000
+    # 向量索引落盘路径（设为 none 则只在内存）
+    store-path: ./data/rag-vectors.json
+    # OpenAI 兼容的 embedding 接口；换成硅基流动 / 智谱 / OpenAI 只改这几个环境变量
+    embedding:
+      base-url: ${RAG_EMBEDDING_BASE_URL:http://localhost:11434}
+      path: ${RAG_EMBEDDING_PATH:/v1/embeddings}
+      api-key: ${RAG_EMBEDDING_API_KEY:ollama}
+      model: ${RAG_EMBEDDING_MODEL:bge-m3}
+      # 单次请求最多带多少条文本，超出自动分批
+      batch-size: 32
   # MCP 工具服务（ChatMcpModel 模块，默认 8082）：主服务以 MCP 客户端连接它，
   # 把远端 @Tool 注册给大模型。服务没启动时只记 WARN，不影响主服务启动。
   mcp:

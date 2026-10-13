@@ -46,7 +46,6 @@
 import { computed, ref } from 'vue'
 import { timeAgo } from '../utils/format'
 import { likeStore } from '../utils/storage'
-import { localNickname } from '../utils/nickname'
 
 const props = defineProps({
   comment: { type: Object, required: true },
@@ -61,8 +60,8 @@ const toggleLike = () => {
   liked.value = likeStore.toggle(props.comment.id)
 }
 
-const nickname = localNickname()
-const mine = computed(() => (props.comment.commenter || '') === nickname)
+/** 归属由服务端判定：mine 为 true 才显示“我”标记与删除按钮 */
+const mine = computed(() => props.comment.mine === true)
 
 const palette = ['#F97316', '#0EA5E9', '#8B5CF6', '#10B981', '#EF4444', '#F59E0B', '#3B82F6']
 const avatarText = computed(() => (props.comment.commenter || '匿').slice(0, 1))

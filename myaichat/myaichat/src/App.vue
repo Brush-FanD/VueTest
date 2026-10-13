@@ -28,11 +28,16 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useAuth } from './composables/useAuth'
 
 const router = useRouter()
 const route = useRoute()
+const { loadUser } = useAuth()
+
+// 应用启动时拉一次当前登录用户，刷新页面也能恢复登录态
+onMounted(loadUser)
 
 /** 底部导航：图标用 path 数据内联，避免引入整套图标库 */
 const tabList = [
@@ -55,6 +60,11 @@ const tabList = [
     path: '/ai',
     label: '懂车AI',
     paths: ['M21 12a8 8 0 0 1-8 8H7l-4 3 1.2-4.2A8 8 0 1 1 21 12Z']
+  },
+  {
+    path: '/me',
+    label: '我的',
+    paths: ['M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z', 'M4 20a8 8 0 0 1 16 0']
   }
 ]
 
